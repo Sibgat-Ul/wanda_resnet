@@ -11,6 +11,7 @@ import time
 from collections import defaultdict, deque
 import datetime
 import numpy as np
+import torchvision.models
 from timm.utils import get_state_dict
 
 from pathlib import Path
@@ -549,11 +550,17 @@ def build_model(args, pretrained=False):
             drop_path_rate=args.drop_path,
             drop_rate=args.dropout,
             )
+    elif args.model.startswith("resnet"):
+        model = torchvision.models.resnet18()
+        model.conv1 = torch.nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+        model.fc = torch.nn.Linear(in_features=model.fc.in_features, out_features=args.nb_classes)
+
+        model.load_state_dict(torch.load(args.resume, map_location='cuda'))
     else:
         model = create_model(
-            args.model, 
-            pretrained=pretrained, 
-            num_classes=args.nb_classes, 
+            args.model,
+            pretrained=pretrained,
+            num_classes=args.nb_classes,
             drop_path_rate=args.drop_path,
             drop_rate =args.dropout
             )
