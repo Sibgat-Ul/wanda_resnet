@@ -319,7 +319,7 @@ def main(args):
         model.conv1 = torch.nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         model.fc = torch.nn.Linear(in_features=model.fc.in_features, out_features=args.nb_classes)
 
-        model.load_state_dict(torch.load(args.resume, map_location='cpu'))
+        model.load_state_dict(torch.load(args.resume, map_location=device))
 
     ################################################################################
     np.random.seed(0)
